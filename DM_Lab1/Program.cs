@@ -1,4 +1,4 @@
-﻿namespace DM_Lab2
+﻿namespace DM_Labs
 {
     internal class Program
     {
@@ -12,11 +12,8 @@
 
             float[,] mainMatrix = MatrixHandler.GetMatrixFromFile(mainMatrixPath);
             float[] vector = MatrixHandler.GetVectorFromFIle(vectorPath);
-            
 
-            MatrixHandler.PrintMatrix(mainMatrix);
-            Console.WriteLine();
-            MatrixHandler.PrintMatrix(vector);
+
         }
     }
 }

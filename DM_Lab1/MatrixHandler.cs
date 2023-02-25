@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DM_Lab2
+namespace DM_Labs
 {
     public static class MatrixHandler
     {
