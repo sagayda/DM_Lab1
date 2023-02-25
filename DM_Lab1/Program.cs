@@ -11,9 +11,12 @@
             string vectorPath = path + @"\right_vector.txt";
 
             float[,] mainMatrix = MatrixHandler.GetMatrixFromFile(mainMatrixPath);
+            float[] vector = MatrixHandler.GetVectorFromFIle(vectorPath);
+            
 
             MatrixHandler.PrintMatrix(mainMatrix);
-
+            Console.WriteLine();
+            MatrixHandler.PrintMatrix(vector);
         }
     }
 }
