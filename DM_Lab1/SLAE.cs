@@ -59,10 +59,9 @@
 
         public static void Start(double[,] mainMatrix, double[] vector)
         {
-            if (mainMatrix.GetLength(0) == mainMatrix.GetLength(1))
+            if (MatrixHandler.IsSymmetric(mainMatrix))
             {
                 QuadraticEquationsSolve(mainMatrix, vector);
-                return;
             }
             else
             {
@@ -142,16 +141,10 @@
             double[,] tMatrix = Factorization(mainMatrix);
             double[,] transTMatrix = MatrixHandler.Transponate(tMatrix);
 
-            MatrixHandler.PrintMatrix(tMatrix);
-            Console.WriteLine("___________________________");
-            MatrixHandler.PrintMatrix(vector);
-            Console.WriteLine("___________________________");
+            double[] yVector = GMReverseCourseDown(transTMatrix, vector);
+            double[] xVector = GMReverseCourseUp(tMatrix, yVector);
 
-
-            double[] yVector = GMReverseCourseUp(tMatrix, vector);
-            MatrixHandler.PrintMatrix(yVector);
+            MatrixHandler.PrintMatrix(xVector);
         }
-
-
     }
 }
