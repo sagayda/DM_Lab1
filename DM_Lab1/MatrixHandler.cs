@@ -2,6 +2,20 @@
 {
     public static class MatrixHandler
     {
+        public static double[,] Transponate(double[,] matrix)
+        {
+            double[,] resMatrix = new double[matrix.GetLength(1), matrix.GetLength(0)];
+
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    resMatrix[j, i] = matrix[i, j];
+                }
+            }
+
+            return resMatrix;
+        }
         public static double DegreeSigma(int i, int k, double[,] matrix)
         {
             double sum = 0;
