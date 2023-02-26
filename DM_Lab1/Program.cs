@@ -10,11 +10,10 @@
             string mainMatrixPath = path + @"\system_matrix.txt";
             string vectorPath = path + @"\right_vector.txt";
 
-            float[,] mainMatrix = MatrixHandler.GetMatrixFromFile(mainMatrixPath);
-            float[] vector = MatrixHandler.GetVectorFromFIle(vectorPath);
+            double[,] mainMatrix = MatrixHandler.GetMatrixFromFile(mainMatrixPath);
+            double[] vector = MatrixHandler.GetVectorFromFIle(vectorPath);
 
-
-
+            SLAE.Solve(mainMatrix, vector);
         }
     }
 }
