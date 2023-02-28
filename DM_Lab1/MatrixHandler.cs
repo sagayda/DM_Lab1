@@ -6,14 +6,14 @@
         {
             double[] row = new double[matrix.GetLength(0)];
 
-            for (int x = 0; x < row.Length; x++)
-                row[x] = matrix[x, toRowIndex];
+            for (int y = 0; y < row.Length; y++)
+                row[y] = matrix[toRowIndex, y];
 
-            for (int x = 0; x < matrix.GetLength(0); x++)
-                matrix[x, toRowIndex] = matrix[x, fromRowIndex];
+            for (int y = 0; y < matrix.GetLength(0); y++)
+                matrix[toRowIndex, y] = matrix[fromRowIndex, y];
 
-            for (int x = 0; x < matrix.GetLength(0); x++)
-                matrix[x, fromRowIndex] = row[x];
+            for (int y = 0; y < matrix.GetLength(0); y++)
+                matrix[fromRowIndex, y] = row[y];
 
             return matrix;
         }
@@ -25,72 +25,13 @@
 
             return vector;
         }
-        public static double[,] Transponate(double[,] matrix)
+        public static void PrintMatrix(double[,] matrix, string message)
         {
-            double[,] resMatrix = new double[matrix.GetLength(1), matrix.GetLength(0)];
-
-            for (int y = 0; y < matrix.GetLength(0); y++)
-            {
-                for (int x = 0; x < matrix.GetLength(1); x++)
-                {
-                    resMatrix[x, y] = matrix[y, x];
-                }
-            }
-
-            return resMatrix;
-        }
-        public static bool IsIdentical(double[,] matrix1, double[,] matrix2)
-        {
-            if (matrix1.GetLength(0) != matrix2.GetLength(0) || matrix1.GetLength(1) != matrix2.GetLength(1))
-                return false;
-
-            for (int y = 0; y < matrix1.GetLength(0); y++)
-            {
-                for (int x = 0; x < matrix1.GetLength(1); x++)
-                {
-                    if (matrix1[x,y] != matrix2[x,y])
-                        return false;
-                }
-            }
-
-            return true;
-        }
-        public static bool IsSymmetric(double[,] matrix)
-        {
-            if (matrix.GetLength(0) != matrix.GetLength(1))
-                return false;
-
-            for (int y = 0; y < matrix.GetLength(0); y++)
-                for (int x = 0; x < matrix.GetLength(1); x++)
-                    if (matrix[y, x] != matrix[x, y])
-                        return false;
-
-            return true;
-        }
-        public static double DegreeSigma(int i, int k, double[,] matrix)
-        {
-            double sum = 0;
-
-            for (; i <= k; i++)
-                sum += Math.Pow(matrix[i, k], 2);
-
-            return sum;
-        }
-        public static double MultiplySigma(int i, int k, double[,] matrix, int j)
-        {
-            double sum = 0;
-
-            for (; i <= k; i++)
-                sum += matrix[i, k + 1] * matrix[i, j];
-
-            return sum;
-        }
-        public static void PrintMatrix(double[,] matrix)
-        {
+            Console.WriteLine(message);
             Console.WriteLine($"Size: {matrix.GetLength(0)} * {matrix.GetLength(1)}");
-            for (int y = 0; y < matrix.GetLength(0); y++)
+            for (int x = 0; x < matrix.GetLength(0); x++)
             {
-                for (int x = 0; x < matrix.GetLength(1); x++)
+                for (int y = 0; y < matrix.GetLength(1); y++)
                 {
                     Console.Write($"{matrix[x, y]}, ");
                 }
@@ -98,39 +39,30 @@
             }
             Console.WriteLine("###############################");
         }
-        public static void PrintMatrix(double[,] matrix, string message)
+        public static void PrintMatrix(double[] vector, string message)
         {
             Console.WriteLine(message);
-            PrintMatrix(matrix);
+            Console.WriteLine($"Size: {vector.Length}");
+
+            for (int y = 0; y < vector.Length; y++)
+                Console.Write($"{vector[y]}, \n");
+
+            Console.WriteLine("###############################");
         }
         public static void PrintMatrix(double[,] matrix, double[] vector, string message)
         {
             Console.WriteLine(message);
             Console.WriteLine($"Size: {matrix.GetLength(0)} * {matrix.GetLength(1)}");
-            for (int y = 0; y < matrix.GetLength(0); y++)
+            for (int x = 0; x < matrix.GetLength(0); x++)
             {
-                for (int x = 0; x < matrix.GetLength(1); x++)
+                for (int y = 0; y < matrix.GetLength(1); y++)
                 {
                     Console.Write($"{matrix[x, y]}, ");
                 }
-                Console.Write($"\t| {vector[y]}, ");
+                Console.Write($"\t| {vector[x]}, ");
                 Console.WriteLine();
             }
             Console.WriteLine("###############################");
-        }
-        public static void PrintMatrix(double[] vector)
-        {
-            Console.WriteLine($"Size: {vector.Length}");
-
-            for (int x = 0; x < vector.Length; x++)
-                Console.Write($"{vector[x]}, \n");
-
-            Console.WriteLine("###############################");
-        }
-        public static void PrintMatrix(double[] matrix, string message)
-        {
-            Console.WriteLine(message);
-            PrintMatrix(matrix);
         }
         public static double[,] GetMatrixFromFile(string path)
         {
@@ -143,17 +75,17 @@
 
             double[,] matrix = new double[xLength, yLenght];
 
-            for (int y = 0; y < xLength; y++)
+            for (int x = 0; x < xLength; x++)
             {
-                var temp = tempList[y].Split(" ");
-                for (int x = 0; x < yLenght; x++)
+                var temp = tempList[x].Split(" ");
+                for (int y = 0; y < yLenght; y++)
                 {
                     if (temp.Length > yLenght)
                     {
                         Console.WriteLine("Bad matrix");
                         break;
                     }
-                    matrix[x, y] = double.Parse(temp[x]);
+                    matrix[x, y] = double.Parse(temp[y]);
                 }
             }
             PrintMatrix(matrix, "\t--Got matrix: ");
@@ -172,5 +104,65 @@
             return vector;
         }
 
+        //public static double MultiplySigma(int i, int k, double[,] matrix, int j)
+        //{
+        //    double sum = 0;
+
+        //    for (; i <= k; i++)
+        //        sum += matrix[i, k + 1] * matrix[i, j];
+
+        //    return sum;
+        //}
+        //public static double DegreeSigma(int i, int k, double[,] matrix)
+        //{
+        //    double sum = 0;
+
+        //    for (; i <= k; i++)
+        //        sum += Math.Pow(matrix[i, k], 2);
+
+        //    return sum;
+        //}
+        //public static bool IsSymmetric(double[,] matrix)
+        //{
+        //    if (matrix.GetLength(0) != matrix.GetLength(1))
+        //        return false;
+
+        //    for (int x = 0; x < matrix.GetLength(0); x++)
+        //        for (int y = 0; y < matrix.GetLength(1); y++)
+        //            if (matrix[x, y] != matrix[y, x])
+        //                return false;
+
+        //    return true;
+        //}
+        //public static bool IsIdentical(double[,] matrix1, double[,] matrix2)
+        //{
+        //    if (matrix1.GetLength(0) != matrix2.GetLength(0) || matrix1.GetLength(1) != matrix2.GetLength(1))
+        //        return false;
+
+        //    for (int x = 0; x < matrix1.GetLength(0); x++)
+        //    {
+        //        for (int y = 0; y < matrix1.GetLength(1); y++)
+        //        {
+        //            if (matrix1[x, y] != matrix2[x, y])
+        //                return false;
+        //        }
+        //    }
+
+        //    return true;
+        //}
+        //public static double[,] Transponate(double[,] matrix)
+        //{
+        //    double[,] resMatrix = new double[matrix.GetLength(1), matrix.GetLength(0)];
+
+        //    for (int x = 0; x < matrix.GetLength(0); x++)
+        //    {
+        //        for (int y = 0; y < matrix.GetLength(1); y++)
+        //        {
+        //            resMatrix[y, x] = matrix[x, y];
+        //        }
+        //    }
+
+        //    return resMatrix;
+        //}
     }
 }
