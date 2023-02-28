@@ -2,107 +2,12 @@
 {
     public static class SLAE
     {
-        public static void Start(double[,] mainMatrix, double[] vector)
+        public static void Solve(double[,] mainMatrix, double[] vector)
         {
-            if (MatrixHandler.IsSymmetric(mainMatrix))
-            {
-                Console.WriteLine("\t--Solution by the square root method");
-                SquareRootMethod(mainMatrix, vector);
-            }
-            else
-            {
-                Console.WriteLine("\t--Solution by Gaussian method");
-                GaussianMethod(mainMatrix, vector);
-            }
+            Console.WriteLine("\t--Solution by Gaussian method");
+            GaussianMethodStraightCourse(mainMatrix, vector);
         }
-        public static double[,] Factorization(double[,] inputMatrix)
-        {
-            int xLenght = inputMatrix.GetLength(0);
-            int yLenght = inputMatrix.GetLength(1);
-
-            double[,] tMatrix = new double[xLenght, yLenght];
-            tMatrix[0, 0] = Math.Sqrt(inputMatrix[0, 0]);
-
-            for (int y = 0; y < xLenght; y++)
-            {
-                for (int x = 0; x < yLenght; x++)
-                {
-                    if (y == 0 && x == 0)
-                        continue;
-
-                    if (y > 0) //set zero elems
-                    {
-                        if (x < y)
-                        {
-                            tMatrix[x, y] = 0;
-                            continue;
-                        }
-                    }
-
-                    if (y == 0) //set firs row
-                    {
-                        tMatrix[x, y] = inputMatrix[x, y] / tMatrix[0, 0];
-                        continue;
-                    }
-
-                    if (y == x) //set main diagonal
-                    {
-                        double sigmaRes = MatrixHandler.DegreeSigma(y, tMatrix.GetLength(1) - 1, tMatrix);
-                        Console.WriteLine(sigmaRes);
-                        if (inputMatrix[x, y] - sigmaRes >= 0)
-                        {
-                            tMatrix[x, y] = Math.Sqrt(inputMatrix[x, y] - sigmaRes);
-                        }
-                        else
-                        {
-                            tMatrix[x, y] = Math.Sqrt(Math.Abs(inputMatrix[x, y] - sigmaRes)) * -1;
-                        }
-                        continue;
-                    }
-
-                    if (y < x)
-                    {
-                        tMatrix[x, y] = (inputMatrix[x, y] - MatrixHandler.MultiplySigma(y - 1, 0, tMatrix, x)) / tMatrix[y, y];
-                        continue;
-                    }
-                }
-            }
-
-            return tMatrix;
-        }
-        private static void Step(double[,] matrix, double[] vector, int i)
-        {
-            double firsElementInRowCoeff = matrix[i, i];
-            for (int x = i; x < matrix.GetLength(0); x++)
-            {
-                matrix[x, i] /= firsElementInRowCoeff;
-            }
-            vector[i] /= firsElementInRowCoeff;
-
-            if (i + 1 >= matrix.GetLength(1) || i + 1 >= matrix.GetLength(0))
-            {
-                MatrixHandler.PrintMatrix(matrix, vector, $"\t--Final step");
-                return;
-            }
-
-            double upRowCoeff = matrix[i, i];
-            for (int y = i + 1; y < matrix.GetLength(1); y++)
-            {
-                double rowCoeff = matrix[i, y];
-                for (int x = i; x < matrix.GetLength(0); x++)
-                {
-                    matrix[x, y] -= rowCoeff / upRowCoeff * matrix[x, i];
-                    if (x == i && matrix[x, y] < 0.0000000000001)
-                        matrix[x, y] = 0;
-                }
-                vector[y] -= rowCoeff / upRowCoeff * vector[i];
-
-            }
-
-            MatrixHandler.PrintMatrix(matrix, vector, $"\t--Step {i + 1}");
-            return;
-        }
-        private static void GaussianMethod(double[,] mainMatrix, double[] vector)
+        private static void GaussianMethodStraightCourse(double[,] mainMatrix, double[] vector)
         {
             if (mainMatrix.GetLength(1) != vector.Length)
             {
@@ -115,12 +20,12 @@
                 int maxCoefficientIndex = i;
                 double maxCoefficient = mainMatrix[i, i];
 
-                for (int y = i; y < mainMatrix.GetLength(1); y++)
+                for (int x = i; x < mainMatrix.GetLength(0); x++)
                 {
-                    if (Math.Abs(mainMatrix[i, y]) > Math.Abs(maxCoefficient))
+                    if (Math.Abs(mainMatrix[x, i]) > Math.Abs(maxCoefficient))
                     {
-                        maxCoefficientIndex = y;
-                        maxCoefficient = mainMatrix[i, y];
+                        maxCoefficientIndex = x;
+                        maxCoefficient = mainMatrix[x, i];
                     }
                 }
 
@@ -131,74 +36,169 @@
                     MatrixHandler.PrintMatrix(mainMatrix, vector, $"\t-- {i + 1} row rearranged to {maxCoefficientIndex + 1}");
                 }
 
-                Step(mainMatrix, vector, i);
+                GaussianMethodStep(mainMatrix, vector, i);
             }
 
-            double[] res = GMReverseCourseUp(mainMatrix, vector);
+            MainDiagonalToOne(mainMatrix, vector);
+            MatrixHandler.PrintMatrix(mainMatrix, vector, "\t--Main diagonal to 1");
+
+            double[] res = GaussianMethodReverseCourse(mainMatrix, vector);
             MatrixHandler.PrintMatrix(res, "\t--Result:");
         }
-        private static double[] GMReverseCourseUp(double[,] mainMatrix, double[] vector)
+        private static void GaussianMethodStep(double[,] matrix, double[] vector, int i)
+        {
+            if (i + 1 >= matrix.GetLength(1) || i + 1 >= matrix.GetLength(0))
+            {
+                MatrixHandler.PrintMatrix(matrix, vector, $"\t--Final step");
+                return;
+            }
+
+            double upRowCoeff = matrix[i, i];
+            for (int x = i + 1; x < matrix.GetLength(0); x++)
+            {
+                double rowCoeff = matrix[x, i];
+                for (int y = i; y < matrix.GetLength(1); y++)
+                {
+                    matrix[x, y] -= rowCoeff / upRowCoeff * matrix[i, y];
+                    matrix[x, y] = Math.Round(matrix[x, y], 15);
+                }
+                vector[x] -= rowCoeff / upRowCoeff * vector[i];
+
+            }
+
+            MatrixHandler.PrintMatrix(matrix, vector, $"\t--Step {i + 1}");
+            return;
+        }
+        private static void MainDiagonalToOne(double[,] matrix, double[] vector)
+        {
+            for (int x = 0; x < matrix.GetLength(0); x++)
+            {
+                double mainCoeff = matrix[x, x];
+                for (int y = 0; y < matrix.GetLength(1); y++)
+                {
+                    matrix[x, y] /= mainCoeff;
+                }
+                vector[x] /= mainCoeff;
+            }
+        }
+        private static double[] GaussianMethodReverseCourse(double[,] mainMatrix, double[] vector)
         {
             double[] result = new double[vector.Length];
 
-            for (int y = vector.Length - 1; y >= 0; y--)
+            for (int x = vector.Length - 1; x >= 0; x--)
             {
-                if (y == vector.Length - 1)
+                double mainCoeff = mainMatrix[x, x];
+                result[x] = vector[x];
+
+                if (x == vector.Length - 1)
                 {
-                    result[y] = vector[y] / mainMatrix[y, mainMatrix.GetLength(1) - 1];
+                    result[x] = vector[x] / mainMatrix[x, x];
                     continue;
                 }
 
-                result[y] = vector[y];
-                for (int x = y + 1; x < mainMatrix.GetLength(0); x++)
+                for (int y = x + 1; y < mainMatrix.GetLength(1); y++)
                 {
-                    result[y] -= mainMatrix[x, y] * result[x];
+                    result[x] -= mainMatrix[x, y] * result[y];
                 }
-                result[y] = result[y] / mainMatrix[y, y];
             }
-
             return result;
 
         }
-        private static double[] GMReverseCourseDown(double[,] mainMatrix, double[] vector)
-        {
-            double[] result = new double[vector.Length];
 
-            for (int i = 0; i < vector.Length; i++)
-            {
-                if (i == 0)
-                {
-                    result[i] = vector[i] / mainMatrix[i, 0];
-                    continue;
-                }
+        //private static double[] GMReverseCourseDown(double[,] mainMatrix, double[] vector)
+        //{
+        //    double[] result = new double[vector.Length];
 
-                result[i] = vector[i];
-                for (int j = 0; j < i; j++)
-                {
-                    result[i] = result[i] - mainMatrix[i, j] * result[j];
-                }
-                result[i] = result[i] / mainMatrix[i, i];
-            }
+        //    for (int i = 0; i < vector.Length; i++)
+        //    {
+        //        if (i == 0)
+        //        {
+        //            result[i] = vector[i] / mainMatrix[i, 0];
+        //            continue;
+        //        }
 
-            return result;
+        //        result[i] = vector[i];
+        //        for (int j = 0; j < i; j++)
+        //        {
+        //            result[i] = result[i] - mainMatrix[i, j] * result[j];
+        //        }
+        //        result[i] = result[i] / mainMatrix[i, i];
+        //    }
 
-        }
-        private static void SquareRootMethod(double[,] mainMatrix, double[] vector)
-        {
-            QEStraightCourse(mainMatrix, vector);
-        }
-        private static void QEStraightCourse(double[,] mainMatrix, double[] vector)
-        {
-            double[,] tMatrix = Factorization(mainMatrix);
-            double[,] transTMatrix = MatrixHandler.Transponate(tMatrix);
+        //    return result;
 
-            MatrixHandler.PrintMatrix(tMatrix, "\tT matrix");
-            MatrixHandler.PrintMatrix(transTMatrix, "\t--T Transponated matrix");
+        //}
+        //private static void SquareRootMethod(double[,] mainMatrix, double[] vector)
+        //{
+        //    QEStraightCourse(mainMatrix, vector);
+        //}
+        //private static void QEStraightCourse(double[,] mainMatrix, double[] vector)
+        //{
+        //    double[,] tMatrix = Factorization(mainMatrix);
+        //    double[,] transTMatrix = MatrixHandler.Transponate(tMatrix);
 
-            double[] yVector = GMReverseCourseDown(transTMatrix, vector);
-            MatrixHandler.PrintMatrix(yVector, "\t--Y vector");
-            double[] xVector = GMReverseCourseUp(tMatrix, yVector);
-            MatrixHandler.PrintMatrix(xVector, "\tResult");
-        }
+        //    MatrixHandler.PrintMatrix(tMatrix, "\tT matrix");
+        //    MatrixHandler.PrintMatrix(transTMatrix, "\t--T Transponated matrix");
+
+        //    double[] yVector = GMReverseCourseDown(transTMatrix, vector);
+        //    MatrixHandler.PrintMatrix(yVector, "\t--Y vector");
+        //    double[] xVector = GMReverseCourseUp(tMatrix, yVector);
+        //    MatrixHandler.PrintMatrix(xVector, "\tResult");
+        //}
+        //public static double[,] Factorization(double[,] inputMatrix)
+        //{
+        //    int xCount = inputMatrix.GetLength(0);
+        //    int yCount = inputMatrix.GetLength(1);
+
+        //    double[,] tMatrix = new double[xCount, yCount];
+        //    tMatrix[0, 0] = Math.Sqrt(inputMatrix[0, 0]);
+
+        //    for (int x = 0; x < xCount; x++)
+        //    {
+        //        for (int y = 0; y < yCount; y++)
+        //        {
+        //            if (x == 0 && y == 0)
+        //                continue;
+
+        //            if (x > 0) //set zero elems
+        //            {
+        //                if (y < x)
+        //                {
+        //                    tMatrix[x, y] = 0;
+        //                    continue;
+        //                }
+        //            }
+
+        //            if (x == 0) //set firs row
+        //            {
+        //                tMatrix[x, y] = inputMatrix[x, y] / tMatrix[0, 0];
+        //                continue;
+        //            }
+
+        //            if (x == y) //set main diagonal
+        //            {
+        //                double sigmaRes = MatrixHandler.DegreeSigma(x, tMatrix.GetLength(1) - 1, tMatrix);
+        //                Console.WriteLine(sigmaRes);
+        //                if (inputMatrix[x, y] - sigmaRes >= 0)
+        //                {
+        //                    tMatrix[x, y] = Math.Sqrt(inputMatrix[x, y] - sigmaRes);
+        //                }
+        //                else
+        //                {
+        //                    tMatrix[x, y] = Math.Sqrt(Math.Abs(inputMatrix[x, y] - sigmaRes)) * -1;
+        //                }
+        //                continue;
+        //            }
+
+        //            if (x < y)
+        //            {
+        //                tMatrix[x, y] = (inputMatrix[x, y] - MatrixHandler.MultiplySigma(x - 1, 0, tMatrix, y)) / tMatrix[x, x];
+        //                continue;
+        //            }
+        //        }
+        //    }
+
+        //    return tMatrix;
+        //}
     }
 }
