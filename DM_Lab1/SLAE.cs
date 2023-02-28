@@ -2,6 +2,19 @@
 {
     public static class SLAE
     {
+        public static void Start(double[,] mainMatrix, double[] vector)
+        {
+            if (MatrixHandler.IsSymmetric(mainMatrix))
+            {
+                Console.WriteLine("\t--Solution by the square root method");
+                SquareRootMethod(mainMatrix, vector);
+            }
+            else
+            {
+                Console.WriteLine("\t--Solution by Gaussian method");
+                GaussianMethod(mainMatrix, vector);
+            }
+        }
         public static double[,] Factorization(double[,] inputMatrix)
         {
             int xLenght = inputMatrix.GetLength(0);
@@ -57,49 +70,93 @@
             return tMatrix;
         }
 
-        public static void Start(double[,] mainMatrix, double[] vector)
+        private static void Step(double[,] matrix, double[] vector, int i)
         {
-            if (MatrixHandler.IsSymmetric(mainMatrix))
+            double firsElementInRowCoeff = matrix[i, i];
+            for (int x = i; x < matrix.GetLength(0); x++)
             {
-                QuadraticEquationsSolve(mainMatrix, vector);
+                matrix[x, i] /= firsElementInRowCoeff;
             }
-            else
-            {
+            vector[i] /= firsElementInRowCoeff;
 
+            if (i + 1 >= matrix.GetLength(1) || i + 1 >= matrix.GetLength(0))
+            {
+                MatrixHandler.PrintMatrix(matrix, vector, $"\t--Final step");
                 return;
             }
+
+            double upRowCoeff = matrix[i, i];
+            for (int y = i + 1; y < matrix.GetLength(1); y++)
+            {
+                double rowCoeff = matrix[i, y];
+                for (int x = i; x < matrix.GetLength(0); x++)
+                {
+                    matrix[x, y] -= rowCoeff / upRowCoeff * matrix[x, i];
+                    if (x == i && matrix[x, y] < 0.0000000000001)
+                        matrix[x, y] = 0;
+                }
+                vector[y] -= rowCoeff / upRowCoeff * vector[i];
+
+            }
+
+            MatrixHandler.PrintMatrix(matrix, vector, $"\t--Step {i + 1}");
+            return;
         }
 
         private static void GaussianMethod(double[,] mainMatrix, double[] vector)
         {
             if (mainMatrix.GetLength(1) != vector.Length)
             {
-                Console.WriteLine("Cant solve by Gaussian method");
+                Console.WriteLine("\t--Matrix and vector have different size");
                 return;
             }
 
+            for (int i = 0; i < mainMatrix.GetLength(0); i++)
+            {
+                int maxCoefficientIndex = i;
+                double maxCoefficient = mainMatrix[i, i];
 
+                for (int y = i; y < mainMatrix.GetLength(1); y++)
+                {
+                    if (Math.Abs(mainMatrix[i, y]) > Math.Abs(maxCoefficient))
+                    {
+                        maxCoefficientIndex = y;
+                        maxCoefficient = mainMatrix[i, y];
+                    }
+                }
 
+                if (maxCoefficientIndex != i)
+                {
+                    mainMatrix = MatrixHandler.RearrangeRows(mainMatrix, i, maxCoefficientIndex);
+                    vector = MatrixHandler.RearrangeRows(vector, i, maxCoefficientIndex);
+                    MatrixHandler.PrintMatrix(mainMatrix, vector, $"\t-- {i + 1} row rearranged to {maxCoefficientIndex + 1}");
+                }
+
+                Step(mainMatrix, vector, i);
+            }
+
+            double[] res = GMReverseCourseUp(mainMatrix, vector);
+            MatrixHandler.PrintMatrix(res, "\t--Result:");
         }
 
         private static double[] GMReverseCourseUp(double[,] mainMatrix, double[] vector)
         {
             double[] result = new double[vector.Length];
 
-            for (int i = vector.Length - 1; i >= 0; i--)
+            for (int y = vector.Length - 1; y >= 0; y--)
             {
-                if (i == vector.Length - 1)
+                if (y == vector.Length - 1)
                 {
-                    result[i] = vector[i] / mainMatrix[i, mainMatrix.GetLength(1) - 1];
+                    result[y] = vector[y] / mainMatrix[y, mainMatrix.GetLength(1) - 1];
                     continue;
                 }
 
-                result[i] = vector[i];
-                for (int j = i + 1; j < mainMatrix.GetLength(0); j++)
+                result[y] = vector[y];
+                for (int x = y + 1; x < mainMatrix.GetLength(0); x++)
                 {
-                    result[i] = result[i] - mainMatrix[i, j] * result[j];
+                    result[y] -= mainMatrix[x, y] * result[x];
                 }
-                result[i] = result[i] / mainMatrix[i, i];
+                result[y] = result[y] / mainMatrix[y, y];
             }
 
             return result;
@@ -129,7 +186,7 @@
 
         }
 
-        private static void QuadraticEquationsSolve(double[,] mainMatrix, double[] vector)
+        private static void SquareRootMethod(double[,] mainMatrix, double[] vector)
         {
 
             QEStraightCourse(mainMatrix, vector);
