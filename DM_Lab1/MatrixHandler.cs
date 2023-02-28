@@ -6,14 +6,14 @@
         {
             double[] row = new double[matrix.GetLength(0)];
 
-            for (int i = 0; i < row.Length; i++)
-                row[i] = matrix[i, toRowIndex];
+            for (int x = 0; x < row.Length; x++)
+                row[x] = matrix[x, toRowIndex];
 
-            for (int i = 0; i < matrix.GetLength(0); i++)
-                matrix[i, toRowIndex] = matrix[i, fromRowIndex];
+            for (int x = 0; x < matrix.GetLength(0); x++)
+                matrix[x, toRowIndex] = matrix[x, fromRowIndex];
 
-            for (int i = 0; i < matrix.GetLength(0); i++)
-                matrix[i, fromRowIndex] = row[i];
+            for (int x = 0; x < matrix.GetLength(0); x++)
+                matrix[x, fromRowIndex] = row[x];
 
             return matrix;
         }
@@ -29,11 +29,11 @@
         {
             double[,] resMatrix = new double[matrix.GetLength(1), matrix.GetLength(0)];
 
-            for (int i = 0; i < matrix.GetLength(0); i++)
+            for (int y = 0; y < matrix.GetLength(0); y++)
             {
-                for (int j = 0; j < matrix.GetLength(1); j++)
+                for (int x = 0; x < matrix.GetLength(1); x++)
                 {
-                    resMatrix[j, i] = matrix[i, j];
+                    resMatrix[x, y] = matrix[y, x];
                 }
             }
 
@@ -44,11 +44,11 @@
             if (matrix1.GetLength(0) != matrix2.GetLength(0) || matrix1.GetLength(1) != matrix2.GetLength(1))
                 return false;
 
-            for (int i = 0; i < matrix1.GetLength(0); i++)
+            for (int y = 0; y < matrix1.GetLength(0); y++)
             {
-                for (int j = 0; j < matrix1.GetLength(1); j++)
+                for (int x = 0; x < matrix1.GetLength(1); x++)
                 {
-                    if (matrix1[i,j] != matrix2[i,j])
+                    if (matrix1[x,y] != matrix2[x,y])
                         return false;
                 }
             }
@@ -60,9 +60,9 @@
             if (matrix.GetLength(0) != matrix.GetLength(1))
                 return false;
 
-            for (int i = 0; i < matrix.GetLength(0); i++)
-                for (int j = 0; j < matrix.GetLength(1); j++)
-                    if (matrix[i, j] != matrix[j, i])
+            for (int y = 0; y < matrix.GetLength(0); y++)
+                for (int x = 0; x < matrix.GetLength(1); x++)
+                    if (matrix[y, x] != matrix[x, y])
                         return false;
 
             return true;
@@ -72,7 +72,7 @@
             double sum = 0;
 
             for (; i <= k; i++)
-                sum += Math.Pow(matrix[i, k + 1], 2);
+                sum += Math.Pow(matrix[i, k], 2);
 
             return sum;
         }
@@ -118,12 +118,12 @@
             }
             Console.WriteLine("###############################");
         }
-        public static void PrintMatrix(double[] matrix)
+        public static void PrintMatrix(double[] vector)
         {
-            Console.WriteLine($"Size: {matrix.Length}");
+            Console.WriteLine($"Size: {vector.Length}");
 
-            for (int i = 0; i < matrix.Length; i++)
-                Console.Write($"{matrix[i]}, \n");
+            for (int x = 0; x < vector.Length; x++)
+                Console.Write($"{vector[x]}, \n");
 
             Console.WriteLine("###############################");
         }
@@ -132,7 +132,6 @@
             Console.WriteLine(message);
             PrintMatrix(matrix);
         }
-
         public static double[,] GetMatrixFromFile(string path)
         {
             List<string> tempList = new List<string>();
