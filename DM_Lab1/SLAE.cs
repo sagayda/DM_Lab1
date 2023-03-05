@@ -22,7 +22,7 @@
 
                 for (int x = i; x < mainMatrix.GetLength(0); x++)
                 {
-                    if (Math.Abs(mainMatrix[x, i]) > Math.Abs(maxCoefficient))
+                    if (Math.Abs(mainMatrix[x, i]) > Math.Abs(maxCoefficient) && vector[x] != 0)
                     {
                         maxCoefficientIndex = x;
                         maxCoefficient = mainMatrix[x, i];
@@ -60,10 +60,10 @@
                 for (int y = i; y < matrix.GetLength(1); y++)
                 {
                     matrix[x, y] -= rowCoeff / upRowCoeff * matrix[i, y];
-                    matrix[x, y] = Math.Round(matrix[x, y], 15);
+                    matrix[x, y] = Math.Round(matrix[x, y], 12);
                 }
                 vector[x] -= rowCoeff / upRowCoeff * vector[i];
-
+                vector[x] = Math.Round(vector[x], 12);
             }
 
             MatrixHandler.PrintMatrix(matrix, vector, $"\t--Step {i + 1}");
@@ -93,6 +93,7 @@
                 if (x == vector.Length - 1)
                 {
                     result[x] = vector[x] / mainMatrix[x, x];
+                    result[x] = Math.Round(result[x], 12);
                     continue;
                 }
 
@@ -100,9 +101,10 @@
                 {
                     result[x] -= mainMatrix[x, y] * result[y];
                 }
+
+                result[x] = Math.Round(result[x], 12);
             }
             return result;
-
         }
 
         //private static double[] GMReverseCourseDown(double[,] mainMatrix, double[] vector)

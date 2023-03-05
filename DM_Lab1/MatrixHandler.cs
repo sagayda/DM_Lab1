@@ -33,7 +33,7 @@
             {
                 for (int y = 0; y < matrix.GetLength(1); y++)
                 {
-                    Console.Write($"{matrix[x, y]}, ");
+                    Console.Write($"{Math.Round(matrix[x, y], 3)}, ");
                 }
                 Console.WriteLine();
             }
@@ -45,7 +45,7 @@
             Console.WriteLine($"Size: {vector.Length}");
 
             for (int y = 0; y < vector.Length; y++)
-                Console.Write($"{vector[y]}, \n");
+                Console.Write($"{Math.Round(vector[y], 3)}, \n");
 
             Console.WriteLine("###############################");
         }
@@ -57,9 +57,9 @@
             {
                 for (int y = 0; y < matrix.GetLength(1); y++)
                 {
-                    Console.Write($"{matrix[x, y]}, ");
+                    Console.Write($"{Math.Round(matrix[x, y], 3)}, ");
                 }
-                Console.Write($"\t| {vector[x]}, ");
+                Console.Write($"\t| {Math.Round(vector[x], 3)}, ");
                 Console.WriteLine();
             }
             Console.WriteLine("###############################");

@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Set path to folder with matrices: (system_matrix.txt and right_vector.txt)");
+            Console.WriteLine("Set path to folder with matrices: (matrix.txt and vector.txt)");
 
             string path = Console.ReadLine();
             string mainMatrixPath = path + @"\matrix.txt";
