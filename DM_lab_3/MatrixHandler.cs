@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Net.Security;
 
 namespace DM_lab_3
 {
@@ -79,6 +80,35 @@ namespace DM_lab_3
                 double[] row = GetRow(matrix, i);
                 double[] suitableRow = GetRow(matrix, suitableRowIndx);
 
+                double multiplyNum = row[i] * -1;
+                for (int j = 0; j < row.Length; j++)
+                {
+                    if (j == i)
+                        continue;
+
+                    multiplyNum += row[j];
+                }
+
+                double devider = suitableRow[i];
+                for (int j = 0; j < suitableRow.Length; j++)
+                {
+                    if (j == i)
+                        continue;
+
+                    devider -= suitableRow[j];
+                }
+
+                multiplyNum /= devider;
+
+                //set changed row to matrix
+                for (int k = 0; k < matrix.GetLength(1); k++)
+                {
+                    matrix[i, k] = row[k] + suitableRow[k] * multiplyNum;
+                }
+                rowDiagonalAdvantage[i] = true;
+                PrintMatrix(matrix, $"\t--Row {i + 1} + row {suitableRowIndx+1} * {multiplyNum}");
+
+                /*
                 //find suitable min multiply num for row
                 for (int multiplyNum = 2;; multiplyNum++)
                 {
@@ -106,6 +136,7 @@ namespace DM_lab_3
                         break;
                     }
                 }
+                */
 
             }
 
