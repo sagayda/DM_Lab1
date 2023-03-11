@@ -2,6 +2,37 @@
 {
     public static class MatrixHandler
     {
+        public static double[] MultiplyMatrix(double[,] matrix, double[] vector)
+        {
+            if (matrix.GetLength(1) != vector.Length)
+                return null;
+
+            double[] result = new double[vector.Length];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                double temp = 0;
+                for (int k = 0; k < vector.Length; k++)
+                {
+                    temp += matrix[i, k] * vector[k];
+                }
+                result[i] = temp;
+            }
+            return result;
+        }
+        public static double[] VectorSubtraction(double[] vectorA, double[] VectorB)
+        {
+            if (vectorA.Length != VectorB.Length)
+                return null;
+
+            double[] result = new double[vectorA.Length];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = vectorA[i] - VectorB[i];
+            }
+            return result;
+        }
         public static double[,] RearrangeRows(double[,] matrix, int fromRowIndex, int toRowIndex)
         {
             double[] row = new double[matrix.GetLength(0)];
@@ -45,7 +76,7 @@
             Console.WriteLine($"Size: {vector.Length}");
 
             for (int y = 0; y < vector.Length; y++)
-                Console.Write($"{Math.Round(vector[y], 3)}, \n");
+                Console.Write($"{vector[y]}, \n");
 
             Console.WriteLine("###############################");
         }

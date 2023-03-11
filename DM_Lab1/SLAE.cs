@@ -1,20 +1,25 @@
-﻿namespace DM_Labs
+﻿using System.Numerics;
+
+namespace DM_Labs
 {
     public static class SLAE
     {
         public static void Solve(double[,] mainMatrix, double[] vector)
         {
             Console.WriteLine("\t--Solution by Gaussian method");
-            GaussianMethodStraightCourse(mainMatrix, vector);
+            double[] result = GaussianMethodStraightCourse(mainMatrix, vector);
+
+            MatrixHandler.PrintMatrix(result, "\t--Result:");
+            MatrixHandler.PrintMatrix(DiscontinuityVector(mainMatrix, vector, result), "\t--DiscontinuityVector");
         }
-        private static void GaussianMethodStraightCourse(double[,] mainMatrix, double[] vector)
+        private static double[] GaussianMethodStraightCourse(double[,] mainMatrix, double[] vector)
         {
             if (mainMatrix.GetLength(1) != vector.Length)
             {
                 Console.WriteLine("\t--Matrix and vector have different size");
-                return;
+                return null;
             }
-
+             
             for (int i = 0; i < mainMatrix.GetLength(0); i++)
             {
                 int maxCoefficientIndex = i;
@@ -42,8 +47,7 @@
             MainDiagonalToOne(mainMatrix, vector);
             MatrixHandler.PrintMatrix(mainMatrix, vector, "\t--Main diagonal to 1");
 
-            double[] res = GaussianMethodReverseCourse(mainMatrix, vector);
-            MatrixHandler.PrintMatrix(res, "\t--Result:");
+            return GaussianMethodReverseCourse(mainMatrix, vector);
         }
         private static void GaussianMethodStep(double[,] matrix, double[] vector, int i)
         {
@@ -60,10 +64,8 @@
                 for (int y = i; y < matrix.GetLength(1); y++)
                 {
                     matrix[x, y] -= rowCoeff / upRowCoeff * matrix[i, y];
-                    matrix[x, y] = Math.Round(matrix[x, y], 12);
                 }
                 vector[x] -= rowCoeff / upRowCoeff * vector[i];
-                vector[x] = Math.Round(vector[x], 12);
             }
 
             MatrixHandler.PrintMatrix(matrix, vector, $"\t--Step {i + 1}");
@@ -83,6 +85,8 @@
         }
         private static double[] GaussianMethodReverseCourse(double[,] mainMatrix, double[] vector)
         {
+            Console.WriteLine("\t--Reverse Course");
+
             double[] result = new double[vector.Length];
 
             for (int x = vector.Length - 1; x >= 0; x--)
@@ -90,21 +94,32 @@
                 double mainCoeff = mainMatrix[x, x];
                 result[x] = vector[x];
 
+
                 if (x == vector.Length - 1)
                 {
                     result[x] = vector[x] / mainMatrix[x, x];
-                    result[x] = Math.Round(result[x], 12);
+                    result[x] = Math.Round(result[x], 13);
+                    Console.Write($"\nX{x + 1} = {result[x]}");
                     continue;
                 }
 
+                Console.Write($"\nX{x + 1} = {result[x]}");
+
                 for (int y = x + 1; y < mainMatrix.GetLength(1); y++)
                 {
+                    Console.Write($" - ({mainMatrix[x, y]} * {result[y]})");
                     result[x] -= mainMatrix[x, y] * result[y];
                 }
 
-                result[x] = Math.Round(result[x], 12);
+                result[x] = Math.Round(result[x], 13);
             }
+
+            Console.WriteLine("\n###############################");
             return result;
+        }
+        private static double[] DiscontinuityVector(double[,] matrix, double[] vector, double[] result) 
+        {
+            return MatrixHandler.VectorSubtraction(vector, MatrixHandler.MultiplyMatrix(matrix, result));
         }
     }
 }
