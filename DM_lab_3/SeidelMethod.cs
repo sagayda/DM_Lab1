@@ -46,22 +46,6 @@
 
                 if (CanStopIterations(result, previousResul, precision, norm))
                     return result;
-
-
-                //foreach (var item in MatrixHandler.VectorSubtraction(MatrixHandler.MultiplyMatrix(matrix, result), vector))
-                //{
-                //    Console.WriteLine($"Row {a} proximity : {item}");
-                //    if (Math.Abs(item) > precision)
-                //    {
-                //        tempBool = false;
-                //    }
-                //}
-
-                //if(tempBool)
-                //{
-                //    return result;
-                //}
-
             }
         }
         public static double[] Solve(double[,] introducedMatrix, double[] introducedVector, double precision)
