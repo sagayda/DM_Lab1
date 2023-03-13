@@ -23,6 +23,19 @@ namespace DM_lab_3
             }
             return result;
         }
+        public static double[] SumVector(double[] vector1, double[] vector2)
+        {
+            if (vector1.Length != vector2.Length)
+                return null;
+
+            double[] result = new double[vector1.Length];
+            for (int i = 0; i < vector1.Length; i++)
+            {
+                result[i] = vector1[i] + vector2[i];
+            }
+
+            return result;
+        }
         public static double[] VectorSubtraction(double[] vectorA, double[] VectorB)
         {
             if (vectorA.Length != VectorB.Length)
@@ -61,6 +74,7 @@ namespace DM_lab_3
         }
         public static void PrintMatrix(double[,] matrix, string message)
         {
+            Console.WriteLine("###############################");
             Console.WriteLine(message);
             Console.WriteLine($"Size: {matrix.GetLength(0)} * {matrix.GetLength(1)}");
             for (int x = 0; x < matrix.GetLength(0); x++)
@@ -71,20 +85,20 @@ namespace DM_lab_3
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine("###############################");
         }
         public static void PrintMatrix(double[] vector, string message)
         {
+            Console.WriteLine("###############################");
             Console.WriteLine(message);
             Console.WriteLine($"Size: {vector.Length}");
 
             for (int y = 0; y < vector.Length; y++)
                 Console.Write($"{vector[y]}, \n");
 
-            Console.WriteLine("###############################");
         }
         public static void PrintMatrix(double[,] matrix, double[] vector, string message)
         {
+            Console.WriteLine("###############################");
             Console.WriteLine(message);
             Console.WriteLine($"Size: {matrix.GetLength(0)} * {matrix.GetLength(1)}");
             for (int x = 0; x < matrix.GetLength(0); x++)
@@ -96,13 +110,17 @@ namespace DM_lab_3
                 Console.Write($"\t| {Math.Round(vector[x], 3)}, ");
                 Console.WriteLine();
             }
-            Console.WriteLine("###############################");
         }
         public static bool GetMatrixFromFile(out double[,] matrix)
         {
             Console.WriteLine("Set path to matrix:");
             string path = Console.ReadLine();
             matrix = null;
+
+            if(path == "27")
+            {
+                path = @"c:matrix\DM_Lab3\matrix.txt";
+            }
 
             if (!File.Exists(path))
             {
@@ -165,6 +183,11 @@ namespace DM_lab_3
             Console.WriteLine("Set path to vector:");
             string path = Console.ReadLine();
             vector = null;
+
+            if (path == "27")
+            {
+                path = @"c:matrix\DM_Lab3\vector.txt";
+            }
 
             if (!File.Exists(path))
             {

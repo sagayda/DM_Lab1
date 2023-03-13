@@ -8,21 +8,20 @@
             double[] introducedVector;
             while (true)
             {
-                while (!MatrixHandler.GetMatrixFromFile(out introducedMatrix));
-                while (!MatrixHandler.GetVectorFromFIle(out introducedVector));
+                while (!MatrixHandler.GetMatrixFromFile(out introducedMatrix)) ;
+                while (!MatrixHandler.GetVectorFromFIle(out introducedVector)) ;
                 if (introducedMatrix?.GetLength(0) == introducedVector?.Length)
                     break;
                 Console.WriteLine("Matrix size != vector size");
             }
 
+            Console.WriteLine("Enter desired precision:");
+            double precision = double.Parse(Console.ReadLine());
+
             MatrixHandler.PrintMatrix(introducedMatrix, "Got matrix:");
             MatrixHandler.PrintMatrix(introducedVector, "Got vector:");
 
-            double[,] ass;
-            if (MatrixHandler.TryGetDiagonalAdvantage(introducedMatrix, out ass))
-            {
-                MatrixHandler.PrintMatrix(ass, "result: ");
-            }
+            MatrixHandler.PrintMatrix(SimpleIterationMethod.Solve(introducedMatrix, introducedVector, precision), "\tRESULT");
         }
     }
 }
