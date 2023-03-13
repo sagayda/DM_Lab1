@@ -21,7 +21,7 @@
             MatrixHandler.PrintMatrix(introducedMatrix, "Got matrix:");
             MatrixHandler.PrintMatrix(introducedVector, "Got vector:");
 
-            MatrixHandler.PrintMatrix(SimpleIterationMethod.Solve(introducedMatrix, introducedVector, precision), "\tRESULT");
+            MatrixHandler.PrintMatrix(SeidelMethod.Solve(introducedMatrix, introducedVector, precision), "\tRESULT");
         }
     }
 }
