@@ -21,7 +21,7 @@ namespace DM_Labs
             {
                 return null;
             }
-             
+
             for (int i = 0; i < mainMatrix.GetLength(0); i++)
             {
                 int maxCoefficientIndex = i;
@@ -111,9 +111,63 @@ namespace DM_Labs
 
             return result;
         }
-        private static double[] DiscontinuityVector(double[,] matrix, double[] vector, double[] result) 
+    }
+
+    public static class MatrixHandler
+    {
+        public static double[] MultiplyMatrix(double[,] matrix, double[] vector)
         {
-            return MatrixHandler.VectorSubtraction(vector, MatrixHandler.MultiplyMatrix(matrix, result));
+            if (matrix.GetLength(1) != vector.Length)
+                return null;
+
+            double[] result = new double[vector.Length];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                double temp = 0;
+                for (int k = 0; k < vector.Length; k++)
+                {
+                    temp += matrix[i, k] * vector[k];
+                }
+                result[i] = temp;
+            }
+            return result;
+        }
+        public static double[] VectorSubtraction(double[] vectorA, double[] VectorB)
+        {
+            if (vectorA.Length != VectorB.Length)
+                return null;
+
+            double[] result = new double[vectorA.Length];
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = vectorA[i] - VectorB[i];
+            }
+            return result;
+        }
+        public static double[,] RearrangeRows(double[,] matrix, int fromRowIndex, int toRowIndex)
+        {
+            double[] row = new double[matrix.GetLength(0)];
+
+            for (int y = 0; y < row.Length; y++)
+                row[y] = matrix[toRowIndex, y];
+
+            for (int y = 0; y < matrix.GetLength(0); y++)
+                matrix[toRowIndex, y] = matrix[fromRowIndex, y];
+
+            for (int y = 0; y < matrix.GetLength(0); y++)
+                matrix[fromRowIndex, y] = row[y];
+
+            return matrix;
+        }
+        public static double[] RearrangeRows(double[] vector, int fromRowIndex, int toRowIndex)
+        {
+            double temp = vector[toRowIndex];
+            vector[toRowIndex] = vector[fromRowIndex];
+            vector[fromRowIndex] = temp;
+
+            return vector;
         }
     }
 }

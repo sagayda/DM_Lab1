@@ -2,35 +2,48 @@
 {
     internal class SeidelMethod
     {
-        private static bool CanStopIterations(double[] vector, double[] previousVector, double precision, double norm)
+        private static bool CanStopIterations(Matrix vector, Matrix previousVector, double precision, double norm)
         {
+            Console.WriteLine("Check for stopping iterations:");
+            bool res = true;
             double temp = 0;
-            for (int j = 0; j < vector.Length; j++)
+            for (int j = 0; j < vector.XLength; j++)
             {
                 temp = Math.Abs(vector[j] - previousVector[j]);
                 if ((norm / (1 - norm)) * temp > precision)
                 {
-                    Console.WriteLine($"{(norm / (1 - norm)) * temp} !< {precision}, iterations continued");
-                    return false;
+                    Console.WriteLine($"{(norm / (1 - norm)) * temp} !< {precision}");
+                    res = false;
+                }
+                else
+                {
+                    Console.WriteLine($"{(norm / (1 - norm)) * temp} < {precision}");
                 }
             }
-            Console.WriteLine($"{(norm / (1 - norm)) * temp} < {precision}, iterations stopped");
-            return true;
+
+            if(res)
+            {
+                Console.WriteLine("\tIterations stopped");
+                return true;
+            }
+
+            Console.WriteLine("\tIterations contunied");
+            return false;
         }
-        public static double[] StartIterations(double[,] matrix, double[] vector, double precision, double norm)
+        public static Matrix StartIterations(Matrix matrix, Matrix vector, double precision, double norm)
         {
-            double[] result = new double[vector.Length];
-            double[] previousResul = new double[vector.Length];
+            Matrix result = new Matrix(vector.XLength);
+            Matrix previousResul = new Matrix(vector.XLength);
 
             //iterations
-            for (int i = 1;; i++)
+            for (int i = 1; ; i++)
             {
-                previousResul = (double[])result.Clone();
+                previousResul = result.Clone();
                 //for each x
-                for (int j = 0; j < result.Length; j++)
+                for (int j = 0; j < result.XLength; j++)
                 {
                     double tempRes = vector[j];
-                    for (int k = 0; k < matrix.GetLength(1); k++)
+                    for (int k = 0; k < matrix.YLength; k++)
                     {
                         if (j == k)
                             continue;
@@ -39,39 +52,37 @@
                     result[j] = tempRes;
                 }
 
-                MatrixHandler.PrintMatrix(result, $"\t--Iteration {i}");
-
-                bool tempBool = true;
-                int a = 1;
-
+                result.PrintUnrounded($"================================\n\t--Iteration {i}\nResult:");
+                (vector - matrix * result).PrintUnrounded($"Vector of unconnectedness:");
                 if (CanStopIterations(result, previousResul, precision, norm))
                     return result;
             }
         }
-        public static double[] Solve(double[,] introducedMatrix, double[] introducedVector, double precision)
+        public static Matrix Solve(Matrix introducedMatrix, Matrix introducedVector, double precision)
         {
-            double[] result = new double[introducedVector.Length];
+            Console.WriteLine("\t\tSeidel method");
+
+            Matrix result = new Matrix(introducedVector.XLength);
 
             //main diagonal to 1
-            for (int i = 0; i < introducedMatrix.GetLongLength(0); i++)
+            for (int i = 0; i < introducedMatrix.XLength; i++)
             {
                 double divider = introducedMatrix[i, i];
-                for (int j = 0; j < introducedMatrix.GetLongLength(1); j++)
+                for (int j = 0; j < introducedMatrix.XLength; j++)
                 {
                     introducedMatrix[i, j] /= divider;
                 }
                 introducedVector[i] /= divider;
             }
-            MatrixHandler.PrintMatrix(introducedMatrix, introducedVector, "\t--Main diagonal to 1");
 
             //convergence condition
-            bool[] diagonalDominationByRows = new bool[introducedVector.Length];
+            bool[] diagonalDominationByRows = new bool[introducedVector.XLength];
 
             double norm = 0;
-            for (int i = 0; i < introducedMatrix.GetLongLength(0); i++)
+            for (int i = 0; i < introducedMatrix.XLength; i++)
             {
                 double elem = 0;
-                for (int j = 0; j < introducedMatrix.GetLongLength(1); j++)
+                for (int j = 0; j < introducedMatrix.YLength; j++)
                 {
                     if (i == j)
                         continue;
@@ -79,7 +90,7 @@
                     elem += Math.Abs(introducedMatrix[i, j]);
                 }
                 diagonalDominationByRows[i] = Math.Abs(introducedMatrix[i, i]) - elem > 0;
-                if(norm < elem)
+                if (norm < elem)
                     norm = elem;
             }
 
@@ -99,26 +110,10 @@
                 return result;
             }
 
-            //get Beta matrix
-            //double[,] betaMatrix = (double[,])introducedMatrix.Clone();
-            //for (int i = 0; i < betaMatrix.GetLength(0); i++)
-            //{
-            //    for (int j = 0; j < betaMatrix.GetLength(1); j++)
-            //    {
-            //        if (i == j)
-            //        {
-            //            betaMatrix[i, j] = 0;
-            //            continue;
-            //        }
-
-            //        betaMatrix[i, j] = betaMatrix[i, j] * -1;
-            //    }
-            //}
-            //MatrixHandler.PrintMatrix(betaMatrix, introducedVector, "\t--Beta matrix");
-
             return StartIterations(introducedMatrix, introducedVector, precision, norm);
-           
+
         }
 
     }
+
 }

@@ -13,7 +13,9 @@
             double[,] mainMatrix = MatrixHandler.GetMatrixFromFile(mainMatrixPath);
             double[] vector = MatrixHandler.GetVectorFromFIle(vectorPath);
 
-            SLAE.Solve(mainMatrix, vector);
+            var res = SLAE.Solve(mainMatrix, vector);
+
+            MatrixHandler.PrintMatrix(res,"res");
         }
     }
 }
