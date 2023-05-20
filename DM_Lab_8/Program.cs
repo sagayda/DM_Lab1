@@ -23,7 +23,9 @@
             //double yAtZero = 1;
 
             CauchyProblemSolution cauchyProblemSolution = new(func, a, b);
-            cauchyProblemSolution.RungeKuttaMethod(h, yAtZero);
+            cauchyProblemSolution.PrintCalculations(h, yAtZero);
+            //var res = cauchyProblemSolution.RungeKuttaMethod(h, yAtZero);
+            //Console.WriteLine(res);
         }
     }
 }
