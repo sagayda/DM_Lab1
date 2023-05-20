@@ -18,7 +18,7 @@
             B = b;
         }
 
-        public double RungeKuttaMethod(double startStep, double yAtZero, out List<Dictionary<string, List<double>>> calculationsTable)
+        public double RungeKuttaMethod(double startStep, double yAtZero, out List<Dictionary<string, double[]>> calculationsTable)
         {
             calculationsTable = new();
 
@@ -26,7 +26,7 @@
 
             //steps cycle
             int i = 0;
-            while (i < (B-A) / h)
+            while (i < (B - A) / h)
             {
                 calculationsTable.Add(CreateNewTableRow());
                 var row = calculationsTable[i];
@@ -38,47 +38,46 @@
                     {
                         if (i == 0)
                         {
-                            row["y"].Add(yAtZero);
-                            row["x"].Add(0);
-                            row["k"].Add(Equation(row["x"][j], row["y"][j]));
+                            row["y"][j] = yAtZero;
+                            row["x"][j] = 0;
+                            row["k"][j] = Equation(row["x"][j], row["y"][j]);
                             continue;
                         }
 
-                        row["x"].Add(i * h);
-                        row["y"].Add(calculationsTable[i - 1]["y"][0] + calculationsTable[i - 1]["deltaY"][0]);
-                        row["k"].Add(Equation(row["x"][j], row["y"][j]));
+                        row["x"][j] = (i * h);
+                        row["y"][j] = (calculationsTable[i - 1]["y"][0] + calculationsTable[i - 1]["deltaY"][0]);
+                        row["k"][j] = (Equation(row["x"][j], row["y"][j]));
                         continue;
                     }
 
                     //setting x
                     if (j == 3)
                     {
-                        row["x"].Add(row["x"][0] + h);
+                        row["x"][j] = (row["x"][0] + h);
                     }
                     else
                     {
-                        row["x"].Add(row["x"][0] + h / 2);
+                        row["x"][j] = (row["x"][0] + h / 2);
                     }
 
                     //setting y
                     if (j == 3)
                     {
-                        row["y"].Add(row["y"][0] + h * row["k"][j - 1]);
+                        row["y"][j] = (row["y"][0] + h * row["k"][j - 1]);
                     }
                     else
                     {
-                        row["y"].Add(row["y"][0] + h * row["k"][j - 1] / 2);
+                        row["y"][j] = (row["y"][0] + h * row["k"][j - 1] / 2);
                     }
 
-                    row["k"].Add(Equation(row["x"][j], row["y"][j]));
+                    row["k"][j] = (Equation(row["x"][j], row["y"][j]));
 
                     if (j == 3)
                     {
-                        row["deltaY"].Add(h / 6f * (row["k"][0] + 2 * row["k"][1] + 2 * row["k"][2] + row["k"][3]));
-                        row["yi"].Add(row["y"][0] + row["deltaY"][0]);
-                        row["e"].Add(Math.Abs((row["k"][1] - row["k"][2]) / (row["k"][0] - row["k"][1])));
+                        row["deltaY"][0] = (1 / 6f * (row["k"][0] + 2 * row["k"][1] + 2 * row["k"][2] + row["k"][3]));
+                        row["yi"][0] = (row["y"][0] + row["deltaY"][0]);
+                        row["teta"][0] = (Math.Abs((row["k"][1] - row["k"][2]) / (row["k"][0] - row["k"][1])));
                     }
-
                 }
 
                 i++;
@@ -90,7 +89,7 @@
 
         public void PrintCalculations(double startStep, double yAtZero)
         {
-            double result = RungeKuttaMethod(startStep, yAtZero, out List<Dictionary<string, List<double>>> calculationsTable);
+            double result = RungeKuttaMethod(startStep, yAtZero, out List<Dictionary<string, double[]>> calculationsTable);
 
             int j = 0;
             foreach (var tableRow in calculationsTable)
@@ -104,22 +103,22 @@
                     Console.Write("\n");
                 }
                 Console.Write($"|DeltaY = {tableRow["deltaY"][0]}\t   |\n");
-                Console.Write($"|Y{j} = {tableRow["yi"][0]}\t   |\n");
-                Console.Write($"|E = {tableRow["e"][0]}\t   |\n");
+                Console.Write($"|y{j} = {tableRow["yi"][0]}\t   |\n");
+                Console.Write($"|Teta = {tableRow["teta"][0]}\t   |\n");
                 j++;
             }
         }
 
-        private Dictionary<string, List<double>> CreateNewTableRow()
+        private static Dictionary<string, double[]> CreateNewTableRow()
         {
-            Dictionary<string, List<double>> result = new()
+            Dictionary<string, double[]> result = new()
             {
-                { "x", new() },
-                { "y", new() },
-                { "k", new() },
-                { "deltaY", new() },
-                {"yi", new() },
-                { "e", new() },
+                { "x", new double[4] },
+                { "y", new double[4] },
+                { "k", new double[4] },
+                { "deltaY", new double[1] },
+                {"yi", new double[1] },
+                { "teta", new double[1] },
             };
 
             return result;
