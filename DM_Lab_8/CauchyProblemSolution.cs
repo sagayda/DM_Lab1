@@ -26,7 +26,7 @@
 
             //steps cycle
             int i = 0;
-            while (i <= 4)
+            while (i < (B-A) / h)
             {
                 calculationsTable.Add(CreateNewTableRow());
                 var row = calculationsTable[i];
@@ -61,7 +61,7 @@
                     }
 
                     //setting y
-                    if(j == 3)
+                    if (j == 3)
                     {
                         row["y"].Add(row["y"][0] + h * row["k"][j - 1]);
                     }
@@ -75,6 +75,8 @@
                     if (j == 3)
                     {
                         row["deltaY"].Add(h / 6f * (row["k"][0] + 2 * row["k"][1] + 2 * row["k"][2] + row["k"][3]));
+                        row["yi"].Add(row["y"][0] + row["deltaY"][0]);
+                        row["e"].Add(Math.Abs((row["k"][1] - row["k"][2]) / (row["k"][0] - row["k"][1])));
                     }
 
                 }
@@ -98,10 +100,12 @@
                 Console.Write($"|x\t|      y      |      k     |\n");
                 for (int i = 0; i < 4; i++)
                 {
-                    Console.Write($"|{Math.Round(tableRow["x"][i],10)}\t|  {tableRow["y"][i]:0.000000}  |  {tableRow["k"][i]:0.000000}  |");
+                    Console.Write($"|{Math.Round(tableRow["x"][i], 10)}\t|  {tableRow["y"][i]:0.000000}  |  {tableRow["k"][i]:0.000000}  |");
                     Console.Write("\n");
                 }
                 Console.Write($"|DeltaY = {tableRow["deltaY"][0]}\t   |\n");
+                Console.Write($"|Y{j} = {tableRow["yi"][0]}\t   |\n");
+                Console.Write($"|E = {tableRow["e"][0]}\t   |\n");
                 j++;
             }
         }
@@ -113,7 +117,9 @@
                 { "x", new() },
                 { "y", new() },
                 { "k", new() },
-                { "deltaY", new() }
+                { "deltaY", new() },
+                {"yi", new() },
+                { "e", new() },
             };
 
             return result;
