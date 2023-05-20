@@ -23,9 +23,8 @@
             //double yAtZero = 1;
 
             CauchyProblemSolution cauchyProblemSolution = new(func, a, b);
-            cauchyProblemSolution.PrintCalculations(h, yAtZero);
-            //var res = cauchyProblemSolution.RungeKuttaMethod(h, yAtZero);
-            //Console.WriteLine(res);
+            cauchyProblemSolution.PrintCalculationsRungeKuttaMethod(h, yAtZero);
+            cauchyProblemSolution.PrintCalculationsAdamsMethod(h, yAtZero);
         }
     }
 }
