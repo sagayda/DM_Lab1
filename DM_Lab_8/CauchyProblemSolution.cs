@@ -18,13 +18,47 @@
             B = b;
         }
 
-        public List<Dictionary<string, double[]>> RungeKuttaMethod(double startStep, double yAtZero)
+        /// <summary>
+        /// Returns a calculations table that satisfies the specified error        
+        /// </summary>
+        public List<Dictionary<string, double[]>> RungeKuttaMethod(double yAtZero, double e)
+        {
+            double h = 0.1;
+            List<List<Dictionary<string, double[]>>> tablesList = new();
+
+            bool canStop = false;
+            while (tablesList.Count < 1 || !canStop)
+            {
+                if (tablesList.Count != 0)
+                {
+                    h /= 2;
+                }
+
+                tablesList.Add(RungeKuttaMethodCalculate(h, yAtZero));
+
+                if (tablesList.Count > 1)
+                {
+                    canStop = true;
+                    for (int i = 0; i < tablesList[^2].Count; i++)
+                    {
+                        tablesList[^2][i]["e"][0] = Math.Abs(tablesList[^1][i * 2]["yi"][0] - tablesList[^2][i]["yi"][0]) / 15f;
+
+                        if (tablesList[^2][i]["e"][0] > e)
+                            canStop = false;
+                    }
+                }
+            }
+
+            return tablesList[^2];
+        }
+
+        /// <summary>
+        /// Returns a calculations table with specified step
+        /// </summary>
+        private List<Dictionary<string, double[]>> RungeKuttaMethodCalculate(double h, double yAtZero)
         {
             List<Dictionary<string, double[]>> calculationsTable = new();
 
-            double h = startStep;
-
-            //steps cycle
             int i = 0;
             while (i < (B - A) / h)
             {
@@ -45,7 +79,7 @@
                         }
 
                         row["x"][j] = (i * h);
-                        row["y"][j] = (calculationsTable[i - 1]["y"][0] + calculationsTable[i - 1]["deltaY"][0]);
+                        row["y"][j] = calculationsTable[i - 1]["yi"][0];
                         row["k"][j] = (Equation(row["x"][j], row["y"][j]));
                         continue;
                     }
@@ -70,8 +104,10 @@
                         row["y"][j] = (row["y"][0] + h * row["k"][j - 1] / 2);
                     }
 
+                    //setting k
                     row["k"][j] = (Equation(row["x"][j], row["y"][j]));
 
+                    //setting other
                     if (j == 3)
                     {
                         row["deltaY"][0] = (h / 6f * (row["k"][0] + 2 * row["k"][1] + 2 * row["k"][2] + row["k"][3]));
@@ -85,7 +121,7 @@
 
             return calculationsTable;
 
-            Dictionary<string, double[]> CreateNewTableRow()
+            static Dictionary<string, double[]> CreateNewTableRow()
             {
                 Dictionary<string, double[]> result = new()
                 {
@@ -95,19 +131,20 @@
                     { "deltaY", new double[1] },
                     {"yi", new double[1] },
                     { "teta", new double[1] },
+                    { "e", new double[1] },
                 };
 
                 return result;
             }
         }
 
-        public List<Dictionary<string, double[]>> RungeKuttaMethod(double startStep, double yAtZero, int rowsToReturn)
+        /// <summary>
+        /// Returns first [rowsToReturn] rows of calculations table with specified step 
+        /// </summary>
+        private List<Dictionary<string, double[]>> RungeKuttaMethodCalculate(double h, double yAtZero, int rowsToReturn, out double step)
         {
             List<Dictionary<string, double[]>> calculationsTable = new();
 
-            double h = startStep;
-
-            //steps cycle
             int i = 0;
             while (i <= rowsToReturn)
             {
@@ -115,6 +152,7 @@
                 var row = calculationsTable[i];
 
                 //setting 4 rows for table row
+
                 for (int j = 0; j < 4; j++)
                 {
                     if (j == 0)
@@ -166,9 +204,10 @@
                 i++;
             }
 
+            step = h;
             return calculationsTable;
 
-            Dictionary<string, double[]> CreateNewTableRow()
+            static Dictionary<string, double[]> CreateNewTableRow()
             {
                 Dictionary<string, double[]> result = new()
                 {
@@ -178,47 +217,81 @@
                     { "deltaY", new double[1] },
                     {"yi", new double[1] },
                     { "teta", new double[1] },
+                    { "e", new double[1] },
                 };
 
                 return result;
             }
         }
 
-        public void PrintCalculationsRungeKuttaMethod(double startStep, double yAtZero)
+        /// <summary>
+        /// Prints calculations table that satisfies the specified error 
+        /// </summary>
+        public void PrintCalculationsRungeKuttaMethod(double yAtZero, double e)
         {
-            List<Dictionary<string, double[]>> calculationsTable = RungeKuttaMethod(startStep, yAtZero);
-            Console.WriteLine("\n>>>\tRunge Kutta method\n");
+            List<Dictionary<string, double[]>> calculationsTable = RungeKuttaMethod(yAtZero, e);
+            Console.WriteLine($"\n>>>\tRunge Kutta method\te = {e}\n");
 
             int j = 0;
             foreach (var tableRow in calculationsTable)
             {
                 //each row in tableRow
                 Console.Write($"\ni = {j}\n");
-                Console.Write($"|x\t|      y      |      k     |\n");
+                Console.Write($"|    x     |     y      |      k     |\n");
                 for (int i = 0; i < 4; i++)
                 {
-                    Console.Write($"|{Math.Round(tableRow["x"][i], 10)}\t|  {tableRow["y"][i]:0.000000}  |  {tableRow["k"][i]:0.000000}  |");
+                    Console.Write($"|{Math.Round(tableRow["x"][i], 10),-10}|  {tableRow["y"][i]:0.000000}  |  {tableRow["k"][i]:0.000000}  |");
                     Console.Write("\n");
                 }
                 Console.Write("------------------------------------\n");
-                Console.Write($"|DeltaY = {tableRow["deltaY"][0]}\t   |\n");
-                Console.Write($"|y{j} = {tableRow["yi"][0]}\t   |\n");
-                Console.Write($"|Teta = {tableRow["teta"][0]}\t   |\n");
+                Console.Write($"|DeltaY = {tableRow["deltaY"][0]}\t     |\n");
+                Console.Write($"|y{j} = {tableRow["yi"][0]}\t     |\n");
+                Console.Write($"|Teta = {tableRow["teta"][0]}\t     |\n");
+                Console.Write($"|E = {tableRow["e"][0]}\t     |\n");
+
                 j++;
             }
         }
 
-        public List<Dictionary<string, double>> AdamsMethod(double startStep, double yAtZero)
+        /// <summary>
+        /// Returns a calculations table that satisfies the specified error
+        /// </summary>
+        public List<Dictionary<string, double>> AdamsMethod(double yAtZero, double e)
         {
-            double h = startStep;
+            double h = 0.1;
+            List<List<Dictionary<string, double>>> tablesList = new();
 
-            var RungeKuttaMethodResult = RungeKuttaMethod(h, yAtZero, 3);
-            List<Dictionary<string, double>> tableA = new();
+            bool canStop = false;
+            while (!canStop)
+            {
+                if (tablesList.Count != 0)
+                {
+                    h /= 2;
+                }
+
+                tablesList.Add(AdamsMethodCalculate(h, yAtZero));
+
+                canStop = true;
+                for (int i = 0; i < tablesList[^1].Count; i++)
+                    if (tablesList[^1][i]["e"] > e)
+                        canStop = false;
+            }
+
+            return tablesList[^1];
+        }
+
+        /// <summary>
+        /// Returns a calculations table with specified step
+        /// </summary>
+        private List<Dictionary<string, double>> AdamsMethodCalculate(double h, double yAtZero)
+        {
+            var RungeKuttaMethodResult = RungeKuttaMethodCalculate(h, yAtZero, 3, out h);
+            List<Dictionary<string, double>> table = new();
 
             foreach (var tableRow in RungeKuttaMethodResult)
             {
-                tableA.Add(CreateNewTableRow());
-                var tableARow = tableA.Last();
+                table.Add(CreateNewTableRow());
+                var tableARow = table.Last();
 
                 tableARow["x"] = tableRow["x"][0];
                 tableARow["y"] = tableRow["y"][0];
@@ -228,32 +301,32 @@
             int i = 3;
             while (i <= (B - A) / h)
             {
-                if (tableA.Count <= i)
-                    tableA.Add(CreateNewTableRow());
+                if (table.Count <= i)
+                    table.Add(CreateNewTableRow());
 
-                var tableRow = tableA[i];
+                var tableRow = table[i];
 
-                if(i == 3) 
+                if (i == 3)
                 {
-                    tableRow["ha/24"] = h * (55f * tableA[i]["y'"] - 59f * tableA[i - 1]["y'"] + 37f * tableA[i - 2]["y'"] - 9f * tableA[i - 3]["y'"]) / 24f;
+                    tableRow["ha/24"] = h * (55f * table[i]["y'"] - 59f * table[i - 1]["y'"] + 37f * table[i - 2]["y'"] - 9f * table[i - 3]["y'"]) / 24f;
                 }
-
-                if (i > 3)
+                else
                 {
                     tableRow["x"] = i * h;
-                    tableRow["y"] = tableA[i - 1]["y"] + tableA[i - 1]["ha/24"];
+                    tableRow["y"] = table[i - 1]["y"] + table[i - 1]["ha/24"];
                     tableRow["y'"] = Equation(tableRow["x"], tableRow["y"]);
 
-                    tableRow["ha/24"] = h * (55f * tableA[i]["y'"] - 59f * tableA[i - 1]["y'"] + 37f * tableA[i - 2]["y'"] - 9f * tableA[i - 3]["y'"]) / 24f;
+                    tableRow["ha/24"] = h * (55f * table[i]["y'"] - 59f * table[i - 1]["y'"] + 37f * table[i - 2]["y'"] - 9f * table[i - 3]["y'"]) / 24f;
 
-                    tableA[i - 1]["hb/24"] = h * (9f * tableA[i]["y'"] + 19f * tableA[i-1]["y'"] - 5f * tableA[i - 2]["y'"] + tableA[i - 3]["y'"] ) / 24f;
-                    tableRow["ySpec"] = tableA[i - 1]["y"] + tableA[i - 1]["hb/24"];
+                    table[i - 1]["hb/24"] = h * (9f * table[i]["y'"] + 19f * table[i - 1]["y'"] - 5f * table[i - 2]["y'"] + table[i - 3]["y'"]) / 24f;
+                    tableRow["ySpec"] = table[i - 1]["y"] + table[i - 1]["hb/24"];
+                    tableRow["e"] = Math.Abs(tableRow["ySpec"] - tableRow["y"]);
                 }
 
                 i++;
             }
 
-            return tableA;
+            return table;
 
             static Dictionary<string, double> CreateNewTableRow()
             {
@@ -265,27 +338,31 @@
                     { "y'", new() },
                     { "ha/24", new() },
                     { "hb/24", new() },
+                    { "e", new() },
                 };
 
                 return result;
             }
         }
 
-        public void PrintCalculationsAdamsMethod(double startStep, double yAtZero)
+        /// <summary>
+        /// Prints calculations table that satisfies the specified error 
+        /// </summary>
+        public void PrintCalculationsAdamsMethod(double yAtZero, double e)
         {
-            var calculationsTable = AdamsMethod(startStep, yAtZero);
+            var calculationsTable = AdamsMethod(yAtZero, e);
 
             int j = 0;
-            Console.WriteLine("\n>>>\tAdams method\n");
-            Console.Write($"|x\t|      y'     |      y     |    ySpec   |   h*a/24   |    h*b/24  |\n");
+            Console.WriteLine($"\n>>>\tAdams method\te = {e}\n");
+            Console.Write($"|x\t|      y'     |      y     |    ySpec   |   h*a/24   |    h*b/24  |      e     |\n");
 
             foreach (var tableRow in calculationsTable)
             {
                 //each row in tableRow
                 Console.Write($"i = {j}\n");
-                if(j >= 3)
+                if (j >= 3)
                 {
-                    Console.Write($"|{Math.Round(tableRow["x"], 10)}\t|  {tableRow["y'"]:0.000000}  |  {tableRow["y"]:0.000000}  |  {tableRow["ySpec"]:0.000000}  |  {tableRow["ha/24"]:0.000000}  |  {tableRow["hb/24"]:0.000000}  |");
+                    Console.Write($"|{Math.Round(tableRow["x"], 10)}\t|  {tableRow["y'"]:0.000000}  |  {tableRow["y"]:0.000000}  |  {tableRow["ySpec"]:0.000000}  |  {tableRow["ha/24"]:0.000000}  |  {tableRow["hb/24"]:0.000000}  |  {tableRow["e"]:0.000000}  |");
                 }
                 else
                 {

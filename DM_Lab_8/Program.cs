@@ -4,27 +4,21 @@
     {
         static void Main(string[] args)
         {
-            Func<double, double, double> func = (x, y) => 0.25 * Math.Pow(y, 2) + Math.Pow(x, 2);
+            //Func<double, double, double> func = (x, y) => 0.25 * Math.Pow(y, 2) + Math.Pow(x, 2);
+            //double a = 0;
+            //double b = 0.5;
+            //double e = 0.001;
+            //double yAtZero = -1;
+
+            Func<double, double, double> func = (x, y) => Math.Pow(Math.E, -1.4 * x) * (Math.Pow(y, 2) + 1.4);
             double a = 0;
-            double b = 0.5;
-            double h = 0.1;
-            double yAtZero = -1;
-
-            //Func<double, double, double> func = (x, y) => (x - y) / 2;
-            //double a = 0;
-            //double b = 3;
-            //double h = 0.25;
-            //double yAtZero = 1;
-
-            //Func<double, double, double> func = (x, y) => 1 + 2 * y - Math.Pow(x, 2);
-            //double a = 0;
-            //double b = 1;
-            //double h = 0.1;
-            //double yAtZero = 1;
+            double b = 1;
+            double e = 0.01;
+            double yAtZero = 0;
 
             CauchyProblemSolution cauchyProblemSolution = new(func, a, b);
-            cauchyProblemSolution.PrintCalculationsRungeKuttaMethod(h, yAtZero);
-            cauchyProblemSolution.PrintCalculationsAdamsMethod(h, yAtZero);
+            cauchyProblemSolution.PrintCalculationsRungeKuttaMethod(yAtZero, e);
+            cauchyProblemSolution.PrintCalculationsAdamsMethod(yAtZero, e);
         }
     }
 }
