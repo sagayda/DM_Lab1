@@ -4,12 +4,6 @@
     {
         static void Main(string[] args)
         {
-            //Func<double, double, double> func = (x, y) => 0.25 * Math.Pow(y, 2) + Math.Pow(x, 2);
-            //double a = 0;
-            //double b = 0.5;
-            //double e = 0.001;
-            //double yAtZero = -1;
-
             Func<double, double, double> func = (x, y) => Math.Pow(Math.E, -1.4 * x) * (Math.Pow(y, 2) + 1.4);
             double a = 0;
             double b = 1;

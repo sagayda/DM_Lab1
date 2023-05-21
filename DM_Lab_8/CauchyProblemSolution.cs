@@ -354,7 +354,7 @@
 
             int j = 0;
             Console.WriteLine($"\n>>>\tAdams method\te = {e}\n");
-            Console.Write($"|x\t|      y'     |      y     |    ySpec   |   h*a/24   |    h*b/24  |      e     |\n");
+            Console.Write($"|x\t|      y'    |      y     |    ySpec   |   h*a/24   |    h*b/24  |      e     |\n");
 
             foreach (var tableRow in calculationsTable)
             {
